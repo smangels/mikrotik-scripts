@@ -13,6 +13,7 @@
 # IMPORTANT: Before to start the script, remember to create manually the records for all domain.
 :local domain "domain.com"
 :local subdomain "mikrotik,gw"
+:local dnsServer "8.8.4.4"
 
 # Set the name of interface where get the internet public IP
 :local inetinterface "wan"
@@ -45,7 +46,7 @@
     :global subarray
     :set subarray [:toarray $subdomain]
     :foreach sub in=$subarray do={
-        :global previousIP [:resolve "$sub.$host"]
+        :global previousIP [:resolve "$sub.$host" server=$dnsServer]
         :if ($currentIP != $previousIP) do={
             :log info "LiveDNS $sub.$host: Current IP $currentIP is not equal to previous IP, update needed"
             :log info "LiveDNS $sub.$host: Sending update"
