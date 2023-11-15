@@ -12,7 +12,7 @@
 # To specify multiple domain and subdomain, separate them with commas.
 # IMPORTANT: Before to start the script, remember to create manually the records for all domain.
 :local domain "domain.com"
-:local subdomain "mikrotik"
+:local subdomain "mikrotik,gw"
 
 # Set the name of interface where get the internet public IP
 :local inetinterface "wan"
@@ -49,7 +49,13 @@
         :if ($currentIP != $previousIP) do={
             :log info "LiveDNS $sub.$host: Current IP $currentIP is not equal to previous IP, update needed"
             :log info "LiveDNS $sub.$host: Sending update"
-            /tool fetch mode=https http-method=put http-header-field="Content-Type:application/json,X-Api-Key:$apikey" http-data="{\"rrset_name\": \"$sub\",\"rrset_type\": \"A\",\"rrset_ttl\": 300,\"rrset_values\": [\"$currentIP\"]}" url="$apiAddress/$host/records/$sub/A" dst-path="" output=none
+            /tool fetch mode=https \
+                http-method=put \
+                http-header-field="Content-Type:application/json,X-Api-Key:$apikey" \
+                http-data="{\"rrset_name\": \"$sub\",\"rrset_type\": \"A\",\"rrset_ttl\": 300,\"rrset_values\": [\"$currentIP\"]}" \
+                url="$apiAddress/$host/records/$sub/A" \
+                dst-path="" \
+                output=none
             :log info "LiveDNS $sub.$host: updated on Gandi with IP $currentIP"
         } else={
             :log info "LiveDNS $sub.$host: Previous IP $previousIP is equal to current IP, no update needed"
